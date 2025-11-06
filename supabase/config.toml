@@ -1,1 +1,7 @@
 project_id = "nvdismuuoimdlcjcjbih"
+
+[functions.ai-search]
+verify_jwt = true
+
+[functions.draft-assistant]
+verify_jwt = true
