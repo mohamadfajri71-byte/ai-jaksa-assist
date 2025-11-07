@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FileText, Loader2, Save, Plus } from "lucide-react";
+import { FileText, Loader2, Save, Plus, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import jsPDF from "jspdf";
 
 interface DraftingAssistantProps {
   userId: string;
@@ -129,6 +130,89 @@ const DraftingAssistant = ({ userId }: DraftingAssistantProps) => {
     }
   };
 
+  const getDraftTypeLabel = (type: string) => {
+    switch (type) {
+      case "dakwaan":
+        return "Dakwaan";
+      case "requisitoir":
+        return "Requisitoir";
+      case "analisis":
+        return "Analisis Yuridis";
+      default:
+        return type;
+    }
+  };
+
+  const exportToPDF = () => {
+    if (!generatedContent) return;
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    const lineHeight = 7;
+    let yPosition = margin;
+
+    // Title
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text(title || getDraftTypeLabel(draftType), pageWidth / 2, yPosition, { align: "center" });
+    yPosition += lineHeight * 2;
+
+    // Draft type label
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "italic");
+    doc.text(`Jenis Dokumen: ${getDraftTypeLabel(draftType)}`, margin, yPosition);
+    yPosition += lineHeight * 1.5;
+
+    // Case Description
+    if (caseDescription) {
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      doc.text("Deskripsi Kasus:", margin, yPosition);
+      yPosition += lineHeight;
+      
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      const caseLines = doc.splitTextToSize(caseDescription, pageWidth - 2 * margin);
+      doc.text(caseLines, margin, yPosition);
+      yPosition += lineHeight * caseLines.length + lineHeight * 1.5;
+    }
+
+    // Separator line
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.5);
+    doc.line(margin, yPosition, pageWidth - margin, yPosition);
+    yPosition += lineHeight * 1.5;
+
+    // Draft Content
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    const contentLines = doc.splitTextToSize(generatedContent, pageWidth - 2 * margin);
+    
+    contentLines.forEach((line: string) => {
+      if (yPosition > pageHeight - margin - 15) {
+        doc.addPage();
+        yPosition = margin;
+      }
+      doc.text(line, margin, yPosition);
+      yPosition += lineHeight;
+    });
+
+    // Footer on last page
+    const timestamp = new Date().toLocaleString('id-ID');
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "italic");
+    doc.text(`Dibuat pada: ${timestamp}`, margin, pageHeight - 10);
+
+    doc.save(`draft-${draftType}-${Date.now()}.pdf`);
+    
+    toast({
+      title: "Berhasil",
+      description: "Draft berhasil diekspor ke PDF.",
+    });
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -206,19 +290,25 @@ const DraftingAssistant = ({ userId }: DraftingAssistantProps) => {
               rows={20}
               className="font-mono text-sm"
             />
-            <Button onClick={handleSave} disabled={saving} className="w-full gap-2">
-              {saving ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Menyimpan...
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4" />
-                  Simpan Draft
-                </>
-              )}
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={handleSave} disabled={saving} className="flex-1 gap-2">
+                {saving ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Menyimpan...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" />
+                    Simpan Draft
+                  </>
+                )}
+              </Button>
+              <Button onClick={exportToPDF} variant="outline" className="gap-2">
+                <Download className="h-4 w-4" />
+                Ekspor PDF
+              </Button>
+            </div>
           </CardContent>
         </Card>
       )}

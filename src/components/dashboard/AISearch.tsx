@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, Loader2, FileText, Scale, BookOpen } from "lucide-react";
+import { Search, Loader2, FileText, Scale, BookOpen, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import jsPDF from "jspdf";
 
 interface SearchResult {
   type: "jurisprudence" | "regulation" | "article";
@@ -92,6 +93,96 @@ const AISearch = () => {
     }
   };
 
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    const lineHeight = 7;
+    let yPosition = margin;
+
+    // Title
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text("Hasil Pencarian AI", margin, yPosition);
+    yPosition += lineHeight * 2;
+
+    // Query
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text("Query:", margin, yPosition);
+    yPosition += lineHeight;
+    
+    const queryLines = doc.splitTextToSize(query, pageWidth - 2 * margin);
+    doc.setFontSize(10);
+    doc.text(queryLines, margin, yPosition);
+    yPosition += lineHeight * queryLines.length + lineHeight;
+
+    // Results
+    results.forEach((result, index) => {
+      // Check if we need a new page
+      if (yPosition > pageHeight - 40) {
+        doc.addPage();
+        yPosition = margin;
+      }
+
+      // Result number and type
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text(`${index + 1}. ${getTypeLabel(result.type)}`, margin, yPosition);
+      yPosition += lineHeight;
+
+      // Reference
+      if (result.reference) {
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "italic");
+        doc.text(`Referensi: ${result.reference}`, margin, yPosition);
+        yPosition += lineHeight;
+      }
+
+      // Title
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "bold");
+      const titleLines = doc.splitTextToSize(result.title, pageWidth - 2 * margin);
+      doc.text(titleLines, margin, yPosition);
+      yPosition += lineHeight * titleLines.length;
+
+      // Content
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      const contentLines = doc.splitTextToSize(result.content, pageWidth - 2 * margin);
+      doc.text(contentLines, margin, yPosition);
+      yPosition += lineHeight * contentLines.length;
+
+      // Relevance
+      if (result.relevance) {
+        yPosition += lineHeight / 2;
+        doc.setFont("helvetica", "bold");
+        doc.text("Relevansi:", margin, yPosition);
+        yPosition += lineHeight;
+        doc.setFont("helvetica", "normal");
+        const relevanceLines = doc.splitTextToSize(result.relevance, pageWidth - 2 * margin);
+        doc.text(relevanceLines, margin, yPosition);
+        yPosition += lineHeight * relevanceLines.length;
+      }
+
+      yPosition += lineHeight * 1.5;
+    });
+
+    // Footer
+    const timestamp = new Date().toLocaleString('id-ID');
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "italic");
+    doc.text(`Diekspor pada: ${timestamp}`, margin, pageHeight - 10);
+
+    doc.save(`pencarian-ai-${Date.now()}.pdf`);
+    
+    toast({
+      title: "Berhasil",
+      description: "Hasil pencarian berhasil diekspor ke PDF.",
+    });
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -127,7 +218,13 @@ const AISearch = () => {
 
       {results.length > 0 && (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Hasil Pencarian ({results.length})</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Hasil Pencarian ({results.length})</h3>
+            <Button onClick={exportToPDF} variant="outline" className="gap-2">
+              <Download className="h-4 w-4" />
+              Ekspor ke PDF
+            </Button>
+          </div>
           {results.map((result, index) => (
             <Card key={index} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
