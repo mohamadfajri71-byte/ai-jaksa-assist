@@ -15,10 +15,10 @@ serve(async (req) => {
     const { draftType, caseDescription } = await req.json();
     console.log('Draft request:', { draftType, caseDescription });
 
-    const grokApiKey = Deno.env.get('GROK_API_KEY');
+    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
 
-    if (!grokApiKey) {
-      throw new Error('GROK_API_KEY not configured');
+    if (!lovableApiKey) {
+      throw new Error('LOVABLE_API_KEY not configured');
     }
 
     // System prompts for different draft types
@@ -65,15 +65,15 @@ Gunakan pendekatan analitis dan sistematis dengan merujuk pada peraturan perunda
 
     const systemPrompt = systemPrompts[draftType as keyof typeof systemPrompts] || systemPrompts.dakwaan;
 
-    // Call Grok AI
-    const grokResponse = await fetch('https://api.x.ai/v1/chat/completions', {
+    // Call Lovable AI
+    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${grokApiKey}`,
+        'Authorization': `Bearer ${lovableApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'grok-beta',
+        model: 'google/gemini-2.5-flash',
         messages: [
           {
             role: 'system',
@@ -89,16 +89,16 @@ Gunakan pendekatan analitis dan sistematis dengan merujuk pada peraturan perunda
       }),
     });
 
-    if (!grokResponse.ok) {
-      const errorText = await grokResponse.text();
-      console.error('Grok API error:', grokResponse.status, errorText);
-      throw new Error(`Grok API error: ${grokResponse.status}`);
+    if (!aiResponse.ok) {
+      const errorText = await aiResponse.text();
+      console.error('AI Gateway error:', aiResponse.status, errorText);
+      throw new Error(`AI Gateway error: ${aiResponse.status}`);
     }
 
-    const grokData = await grokResponse.json();
-    console.log('Grok response received');
+    const aiData = await aiResponse.json();
+    console.log('AI response received');
 
-    const content = grokData.choices[0].message.content;
+    const content = aiData.choices[0].message.content;
 
     return new Response(
       JSON.stringify({ content }),

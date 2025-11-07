@@ -18,10 +18,10 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const grokApiKey = Deno.env.get('GROK_API_KEY');
+    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
 
-    if (!grokApiKey) {
-      throw new Error('GROK_API_KEY not configured');
+    if (!lovableApiKey) {
+      throw new Error('LOVABLE_API_KEY not configured');
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -40,15 +40,15 @@ serve(async (req) => {
       articles: articlesData.data || [],
     };
 
-    // Call Grok AI
-    const grokResponse = await fetch('https://api.x.ai/v1/chat/completions', {
+    // Call Lovable AI
+    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${grokApiKey}`,
+        'Authorization': `Bearer ${lovableApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'grok-beta',
+        model: 'google/gemini-2.5-flash',
         messages: [
           {
             role: 'system',
@@ -86,18 +86,18 @@ Data pasal: ${JSON.stringify(context.articles.slice(0, 20))}`
       }),
     });
 
-    if (!grokResponse.ok) {
-      const errorText = await grokResponse.text();
-      console.error('Grok API error:', grokResponse.status, errorText);
-      throw new Error(`Grok API error: ${grokResponse.status}`);
+    if (!aiResponse.ok) {
+      const errorText = await aiResponse.text();
+      console.error('AI Gateway error:', aiResponse.status, errorText);
+      throw new Error(`AI Gateway error: ${aiResponse.status}`);
     }
 
-    const grokData = await grokResponse.json();
-    console.log('Grok response:', grokData);
+    const aiData = await aiResponse.json();
+    console.log('AI response:', aiData);
 
     let results = [];
     try {
-      const content = grokData.choices[0].message.content;
+      const content = aiData.choices[0].message.content;
       // Try to parse JSON from the response
       const jsonMatch = content.match(/\[[\s\S]*\]/);
       if (jsonMatch) {
@@ -113,11 +113,11 @@ Data pasal: ${JSON.stringify(context.articles.slice(0, 20))}`
         }];
       }
     } catch (parseError) {
-      console.error('Error parsing Grok response:', parseError);
+      console.error('Error parsing AI response:', parseError);
       results = [{
         type: 'jurisprudence',
         title: 'Hasil Pencarian',
-        content: grokData.choices[0].message.content,
+        content: aiData.choices[0].message.content,
         relevance: 'Analisis dari AI',
         reference: ''
       }];
