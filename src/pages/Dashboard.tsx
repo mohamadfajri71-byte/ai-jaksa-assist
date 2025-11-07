@@ -4,9 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Scale, LogOut, Shield } from "lucide-react";
+import { Scale, LogOut, Shield, Search, MessageSquare, FileText, BookOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import AISearch from "@/components/dashboard/AISearch";
+import LegalChat from "@/components/dashboard/LegalChat";
 import DraftingAssistant from "@/components/dashboard/DraftingAssistant";
 import KnowledgeBase from "@/components/dashboard/KnowledgeBase";
 import AdminPanel from "@/components/dashboard/AdminPanel";
@@ -100,15 +101,37 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="search" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
-            <TabsTrigger value="search">Pencarian AI</TabsTrigger>
-            <TabsTrigger value="draft">Asisten Draf</TabsTrigger>
-            <TabsTrigger value="knowledge">Database</TabsTrigger>
-            {isAdmin && <TabsTrigger value="admin">Admin</TabsTrigger>}
+          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-5' : 'grid-cols-4'} mb-8`}>
+            <TabsTrigger value="search" className="gap-2">
+              <Search className="h-4 w-4" />
+              Cari Database
+            </TabsTrigger>
+            <TabsTrigger value="chat" className="gap-2">
+              <MessageSquare className="h-4 w-4" />
+              Chat Hukum
+            </TabsTrigger>
+            <TabsTrigger value="draft" className="gap-2">
+              <FileText className="h-4 w-4" />
+              Asisten Draf
+            </TabsTrigger>
+            <TabsTrigger value="knowledge" className="gap-2">
+              <BookOpen className="h-4 w-4" />
+              Database
+            </TabsTrigger>
+            {isAdmin && (
+              <TabsTrigger value="admin" className="gap-2">
+                <Shield className="h-4 w-4" />
+                Admin
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="search">
             <AISearch />
+          </TabsContent>
+
+          <TabsContent value="chat">
+            <LegalChat />
           </TabsContent>
 
           <TabsContent value="draft">
