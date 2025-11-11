@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,16 +11,37 @@ import { useToast } from "@/hooks/use-toast";
 const AdminLogin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Check if already logged in as admin
+    const checkAdminStatus = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: roleData } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", session.user.id)
+          .eq("role", "admin")
+          .single();
+        
+        if (roleData) {
+          navigate("/admin");
+        }
+      }
+    };
+    checkAdminStatus();
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!password) {
+    if (!email || !password) {
       toast({
         title: "Error",
-        description: "Silakan masukkan password",
+        description: "Silakan isi email dan password",
         variant: "destructive",
       });
       return;
@@ -28,35 +49,38 @@ const AdminLogin = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("admin-auth", {
-        body: { password },
+      // Login with Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
 
-      if (error) throw error;
+      if (authError) throw authError;
 
-      if (data.success) {
-        // Store admin session
-        sessionStorage.setItem("admin_token", data.token);
-        sessionStorage.setItem("admin_authenticated", "true");
-        
-        toast({
-          title: "Berhasil",
-          description: "Login admin berhasil",
-        });
-        
-        navigate("/admin");
-      } else {
-        toast({
-          title: "Login Gagal",
-          description: data.message || "Password salah",
-          variant: "destructive",
-        });
+      // Check if user has admin role
+      const { data: roleData, error: roleError } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", authData.user.id)
+        .eq("role", "admin")
+        .single();
+
+      if (roleError || !roleData) {
+        await supabase.auth.signOut();
+        throw new Error("Akun Anda tidak memiliki akses admin");
       }
+
+      toast({
+        title: "Berhasil",
+        description: "Login admin berhasil",
+      });
+      
+      navigate("/admin");
     } catch (error: any) {
       console.error("Admin login error:", error);
       toast({
-        title: "Error",
-        description: error.message || "Terjadi kesalahan saat login",
+        title: "Login Gagal",
+        description: error.message || "Email atau password salah",
         variant: "destructive",
       });
     } finally {
@@ -79,11 +103,22 @@ const AdminLogin = () => {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="password">Password Admin</Label>
+              <Label htmlFor="email">Email Admin</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="admin@aicalegal.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Masukkan password admin"
+                placeholder="Masukkan password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}

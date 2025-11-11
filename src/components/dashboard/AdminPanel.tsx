@@ -1,5 +1,12 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Users, BookOpen, FileText, File } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Database, Users, BookOpen, FileText, File } from "lucide-react";
+import UserManagement from "./admin/UserManagement";
+import JurisprudenceManagement from "./admin/JurisprudenceManagement";
+import RegulationManagement from "./admin/RegulationManagement";
+import SOPManagement from "./admin/SOPManagement";
+import ArticleManagement from "./admin/ArticleManagement";
 
 const AdminPanel = () => {
   return (
@@ -7,100 +14,59 @@ const AdminPanel = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            Panel Admin
+            <Database className="h-5 w-5" />
+            Manajemen Database
           </CardTitle>
           <CardDescription>
-            Kelola konten database dan pengguna sistem
+            Kelola seluruh konten database dan pengguna sistem
           </CardDescription>
         </CardHeader>
       </Card>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <Users className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <CardTitle>Kelola Pengguna</CardTitle>
-                <CardDescription>Atur role dan akses user</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Tambah, edit, atau hapus pengguna. Atur role admin atau user untuk setiap akun.
-            </p>
-          </CardContent>
-        </Card>
+      <Tabs defaultValue="users" className="w-full">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="users" className="gap-2">
+            <Users className="h-4 w-4" />
+            Pengguna
+          </TabsTrigger>
+          <TabsTrigger value="jurisprudence" className="gap-2">
+            <BookOpen className="h-4 w-4" />
+            Yurisprudensi
+          </TabsTrigger>
+          <TabsTrigger value="regulations" className="gap-2">
+            <FileText className="h-4 w-4" />
+            Regulasi
+          </TabsTrigger>
+          <TabsTrigger value="articles" className="gap-2">
+            <FileText className="h-4 w-4" />
+            Pasal
+          </TabsTrigger>
+          <TabsTrigger value="sop" className="gap-2">
+            <File className="h-4 w-4" />
+            SOP
+          </TabsTrigger>
+        </TabsList>
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <BookOpen className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <CardTitle>Yurisprudensi</CardTitle>
-                <CardDescription>Kelola database yurisprudensi</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Tambah, edit, atau hapus data yurisprudensi pidana khusus.
-            </p>
-          </CardContent>
-        </Card>
+        <TabsContent value="users" className="mt-6">
+          <UserManagement />
+        </TabsContent>
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <FileText className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <CardTitle>Regulasi & Pasal</CardTitle>
-                <CardDescription>Kelola regulasi dan pasal</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Tambah, edit, atau hapus data regulasi dan pasal terkait.
-            </p>
-          </CardContent>
-        </Card>
+        <TabsContent value="jurisprudence" className="mt-6">
+          <JurisprudenceManagement />
+        </TabsContent>
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <File className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <CardTitle>SOP Internal</CardTitle>
-                <CardDescription>Kelola dokumen SOP</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Tambah, edit, atau hapus dokumen Standard Operating Procedure internal.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+        <TabsContent value="regulations" className="mt-6">
+          <RegulationManagement />
+        </TabsContent>
 
-      <Card className="border-primary/20 bg-primary/5">
-        <CardContent className="pt-6">
-          <p className="text-sm text-center text-muted-foreground">
-            Untuk mengelola data secara detail, silakan akses database melalui Cloud dashboard.
-          </p>
-        </CardContent>
-      </Card>
+        <TabsContent value="articles" className="mt-6">
+          <ArticleManagement />
+        </TabsContent>
+
+        <TabsContent value="sop" className="mt-6">
+          <SOPManagement />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
