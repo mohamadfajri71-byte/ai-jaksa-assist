@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Scale, Search, FileText, BookOpen, Shield, ArrowRight } from "lucide-react";
+import { Search, FileText, BookOpen, Shield, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Landing = () => {
@@ -12,7 +12,11 @@ const Landing = () => {
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Scale className="h-8 w-8 text-primary" />
+            <img 
+              src="/logo website.png" 
+              alt="AICA Legal Logo" 
+              className="h-8 w-auto"
+            />
             <span className="text-2xl font-bold text-primary">AICA Legal</span>
           </div>
           <div className="flex gap-3">
@@ -181,7 +185,11 @@ const Landing = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
-              <Scale className="h-6 w-6 text-primary" />
+              <img 
+                src="/logo website.png" 
+                alt="AICA Legal Logo" 
+                className="h-6 w-auto"
+              />
               <span className="font-semibold">AICA Legal Platform</span>
             </div>
             <p className="text-sm text-muted-foreground">
