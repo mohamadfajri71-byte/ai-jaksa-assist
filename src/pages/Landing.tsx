@@ -14,10 +14,10 @@ const Landing = () => {
           <div className="flex items-center gap-2">
             <img 
               src="/logo website.png" 
-              alt=" Logo" 
+              alt="AICA Legal Logo" 
               className="h-8 w-auto"
             />
-            <span className="text-2xl font-bold text-primary">AICA Legal</span>
+            <span className="text-2xl font-bold text-primary">AICA</span>
           </div>
           <div className="flex gap-3">
             <Button variant="outline" onClick={() => navigate("/auth")}>

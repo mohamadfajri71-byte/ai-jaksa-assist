@@ -78,7 +78,7 @@ const Dashboard = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Scale className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-primary">AICA Legal</span>
+            <span className="text-2xl font-bold text-primary">AICA</span>
           </div>
           <div className="flex items-center gap-4">
             {isAdmin && (

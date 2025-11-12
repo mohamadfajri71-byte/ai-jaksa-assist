@@ -103,7 +103,7 @@ const Auth = () => {
         <CardHeader className="text-center space-y-4">
           <div className="flex items-center justify-center gap-2">
             <Scale className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-primary">AICA Legal</span>
+            <span className="text-2xl font-bold text-primary">AICA</span>
           </div>
           <div>
             <CardTitle className="text-2xl">
