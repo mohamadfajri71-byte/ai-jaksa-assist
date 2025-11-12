@@ -14,7 +14,7 @@ const Landing = () => {
           <div className="flex items-center gap-2">
             <img 
               src="/logo website.png" 
-              alt="AICA Legal Logo" 
+              alt=" Logo" 
               className="h-8 w-auto"
             />
             <span className="text-2xl font-bold text-primary">AICA Legal</span>
