@@ -18,18 +18,33 @@ const AdminLogin = () => {
   useEffect(() => {
     // Check if already logged in as admin
     const checkAdminStatus = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        const { data: roleData } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", session.user.id)
-          .eq("role", "admin")
-          .single();
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (roleData) {
-          navigate("/admin");
+        if (sessionError) {
+          console.error("Session error in AdminLogin:", sessionError);
+          return;
         }
+        
+        if (session?.user) {
+          const { data: roleData, error: roleError } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", session.user.id)
+            .eq("role", "admin")
+            .maybeSingle();
+          
+          if (roleError) {
+            console.error("Role check error:", roleError);
+            return;
+          }
+          
+          if (roleData) {
+            navigate("/admin");
+          }
+        }
+      } catch (error) {
+        console.error("Error checking admin status:", error);
       }
     };
     checkAdminStatus();
@@ -63,11 +78,17 @@ const AdminLogin = () => {
         .select("role")
         .eq("user_id", authData.user.id)
         .eq("role", "admin")
-        .single();
+        .maybeSingle();
 
-      if (roleError || !roleData) {
+      if (roleError) {
+        console.error("Role check error:", roleError);
         await supabase.auth.signOut();
-        throw new Error("Akun Anda tidak memiliki akses admin");
+        throw new Error(`Error memeriksa akses admin: ${roleError.message}`);
+      }
+
+      if (!roleData) {
+        await supabase.auth.signOut();
+        throw new Error("Akun Anda tidak memiliki akses admin. Silakan hubungi administrator untuk memberikan akses admin.");
       }
 
       toast({

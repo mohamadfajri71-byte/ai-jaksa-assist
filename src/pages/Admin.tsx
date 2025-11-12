@@ -16,40 +16,77 @@ const Admin = () => {
   useEffect(() => {
     const checkAdminAccess = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          toast({
+            title: "Error",
+            description: "Terjadi kesalahan saat memeriksa session",
+            variant: "destructive",
+          });
+          navigate("/admin/login");
+          setLoading(false);
+          return;
+        }
         
         if (!session?.user) {
+          console.log("No session found, redirecting to login");
           toast({
             title: "Akses Ditolak",
             description: "Silakan login terlebih dahulu",
             variant: "destructive",
           });
           navigate("/admin/login");
+          setLoading(false);
           return;
         }
 
-        // Check admin role from database
-        const { data: roleData, error } = await supabase
+        console.log("Checking admin role for user:", session.user.id);
+
+        // Check admin role from database - use maybeSingle() instead of single() to handle no data gracefully
+        const { data: roleData, error: roleError } = await supabase
           .from("user_roles")
           .select("role")
           .eq("user_id", session.user.id)
           .eq("role", "admin")
-          .single();
+          .maybeSingle();
 
-        if (error || !roleData) {
+        console.log("Role query result:", { roleData, roleError });
+
+        if (roleError) {
+          console.error("Role query error:", roleError);
           toast({
-            title: "Akses Ditolak",
-            description: "Anda tidak memiliki akses admin",
+            title: "Error",
+            description: `Terjadi kesalahan saat memeriksa akses: ${roleError.message}`,
             variant: "destructive",
           });
-          await supabase.auth.signOut();
           navigate("/admin/login");
+          setLoading(false);
           return;
         }
 
+        if (!roleData) {
+          console.log("No admin role found for user");
+          toast({
+            title: "Akses Ditolak",
+            description: "Anda tidak memiliki akses admin. Silakan hubungi administrator.",
+            variant: "destructive",
+          });
+          navigate("/admin/login");
+          setLoading(false);
+          return;
+        }
+
+        console.log("Admin access granted");
         setUser(session.user);
-      } catch (error) {
-        console.error("Error checking admin access:", error);
+      } catch (error: any) {
+        console.error("Unexpected error checking admin access:", error);
+        toast({
+          title: "Error",
+          description: error?.message || "Terjadi kesalahan tidak terduga",
+          variant: "destructive",
+        });
         navigate("/admin/login");
       } finally {
         setLoading(false);
