@@ -156,6 +156,17 @@ const Landing = () => {
               Platform Kejaksaan Negeri Manggarai Barat
             </div>
             
+            {/* Character Animation */}
+            <div className="flex justify-center animate-fade-in">
+              <div className="relative">
+                <img 
+                  src="/logolanding.png" 
+                  alt="AICA Character" 
+                  className="h-48 md:h-64 lg:h-80 w-auto animate-float"
+                />
+              </div>
+            </div>
+            
             {/* Main Heading */}
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight animate-fade-in">
               Asisten Cerdas untuk
