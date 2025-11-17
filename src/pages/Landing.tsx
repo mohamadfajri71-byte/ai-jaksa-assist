@@ -1,12 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Search, FileText, BookOpen, Shield, ArrowRight, CheckCircle2, Menu } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Search, FileText, BookOpen, Shield, ArrowRight, CheckCircle2, Menu, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const Landing = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [bidangMenuOpen, setBidangMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
@@ -36,6 +43,26 @@ const Landing = () => {
               <a href="#benefits" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                 Keunggulan
               </a>
+              <DropdownMenu>
+                <DropdownMenuTrigger className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 outline-none">
+                  Bidang
+                  <ChevronDown className="h-4 w-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem>
+                    Pidsus
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Pidum
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Datun
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Intel
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <a href="#about" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                 Tentang
               </a>
@@ -77,6 +104,31 @@ const Landing = () => {
               <a href="#benefits" className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:text-primary">
                 Keunggulan
               </a>
+              <div>
+                <button
+                  onClick={() => setBidangMenuOpen(!bidangMenuOpen)}
+                  className="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-muted-foreground hover:text-primary"
+                >
+                  Bidang
+                  <ChevronDown className={`h-4 w-4 transition-transform ${bidangMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {bidangMenuOpen && (
+                  <div className="pl-6 space-y-2 mt-2">
+                    <a href="#" className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary">
+                      Pidsus
+                    </a>
+                    <a href="#" className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary">
+                      Pidum
+                    </a>
+                    <a href="#" className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary">
+                      Datun
+                    </a>
+                    <a href="#" className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary">
+                      Intel
+                    </a>
+                  </div>
+                )}
+              </div>
               <a href="#about" className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:text-primary">
                 Tentang
               </a>
@@ -300,7 +352,7 @@ const Landing = () => {
             </div>
             <div className="text-center md:text-right">
               <p className="text-sm text-muted-foreground">
-                &copy; 2024 AICA Legal - Kejaksaan Negeri Manggarai Barat
+                &copy; 2025 AICA Legal - Kejaksaan Negeri Manggarai Barat
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 Platform Asisten Cerdas untuk Jaksa Profesional
