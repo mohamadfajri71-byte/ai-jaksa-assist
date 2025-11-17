@@ -1,4 +1,4 @@
-import { Scale, Search, MessageSquare, FileText, BookOpen, Shield, User, Bell, FolderTree, ChevronRight } from "lucide-react";
+import { Search, MessageSquare, FileText, BookOpen, Shield, User, Bell, FolderTree, ChevronRight } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -63,8 +63,16 @@ export function AppSidebar({ isAdmin }: AppSidebarProps) {
     <Sidebar className={collapsed ? "w-16" : "w-64"} collapsible="icon">
       <SidebarHeader className="border-b p-4">
         <div className="flex items-center gap-2">
-          <Scale className="h-8 w-8 text-primary" />
-          {!collapsed && <span className="text-xl font-bold text-primary">AICA</span>}
+          <img 
+            src="/logo website.png" 
+            alt="AICA Logo" 
+            className="h-8 w-auto"
+          />
+          {!collapsed && (
+            <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
+              AICA.WEB.ID
+            </span>
+          )}
         </div>
       </SidebarHeader>
 

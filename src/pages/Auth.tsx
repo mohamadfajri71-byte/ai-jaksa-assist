@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Scale, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
@@ -124,9 +124,15 @@ const Auth = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
-          <div className="flex items-center justify-center gap-2">
-            <Scale className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-primary">AICA</span>
+          <div className="flex items-center justify-center gap-2 bg-primary/10 px-3 py-1.5 rounded-lg">
+            <img 
+              src="/logo website.png" 
+              alt="AICA Logo" 
+              className="h-7 w-auto"
+            />
+            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
+              AICA.WEB.ID
+            </span>
           </div>
           <div>
             <CardTitle className="text-2xl">

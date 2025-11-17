@@ -3,7 +3,7 @@ import { useNavigate, Routes, Route, Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
-import { Scale, LogOut, Shield, Menu } from "lucide-react";
+import { LogOut, Shield, Menu } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -87,9 +87,15 @@ const Dashboard = () => {
             <div className="container mx-auto px-4 py-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <SidebarTrigger className="lg:hidden" />
-                <div className="flex items-center gap-2">
-                  <Scale className="h-8 w-8 text-primary" />
-                  <span className="text-2xl font-bold text-primary">AICA</span>
+                <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-lg">
+                  <img 
+                    src="/logo website.png" 
+                    alt="AICA Logo" 
+                    className="h-7 w-auto"
+                  />
+                  <span className="text-2xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
+                    AICA.WEB.ID
+                  </span>
                 </div>
               </div>
               <div className="flex items-center gap-4">

@@ -30,7 +30,7 @@ const Landing = () => {
                   className="h-7 w-auto"
                 />
                 <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
-                  AICA Legal
+                  AICA.WEB.ID
                 </span>
               </div>
             </div>
