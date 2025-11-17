@@ -1,6 +1,7 @@
-import { Scale, Search, MessageSquare, FileText, BookOpen, Shield, User, Settings, Bell } from "lucide-react";
+import { Scale, Search, MessageSquare, FileText, BookOpen, Shield, User, Bell, FolderTree, ChevronRight } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -10,6 +11,9 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   SidebarHeader,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -34,8 +38,26 @@ export function AppSidebar({ isAdmin }: AppSidebarProps) {
   const { state } = useSidebar();
   const location = useLocation();
   const collapsed = state === "collapsed";
+  const [bidangOpen, setBidangOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
+  
+  const bidangSubmenu = [
+    { title: "Pidsus", url: "/dashboard/bidang/pidsus" },
+    { title: "Pidum", url: "/dashboard/bidang/pidum" },
+    { title: "Datun", url: "/dashboard/bidang/datun" },
+    { title: "Intel", url: "/dashboard/bidang/intel" },
+  ];
+  
+  // Check if any submenu is active
+  const isBidangActive = bidangSubmenu.some(item => isActive(item.url));
+  
+  // Auto-expand submenu if any submenu is active
+  useEffect(() => {
+    if (isBidangActive && !collapsed) {
+      setBidangOpen(true);
+    }
+  }, [isBidangActive, collapsed]);
 
   return (
     <Sidebar className={collapsed ? "w-16" : "w-64"} collapsible="icon">
@@ -65,6 +87,42 @@ export function AppSidebar({ isAdmin }: AppSidebarProps) {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              
+              {/* Menu Bidang dengan Submenu */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={() => !collapsed && setBidangOpen(!bidangOpen)}
+                  data-active={isBidangActive}
+                  className="flex items-center gap-3 px-3 py-2"
+                >
+                  <FolderTree className="h-5 w-5" />
+                  {!collapsed && (
+                    <>
+                      <span>Bidang</span>
+                      <ChevronRight
+                        className={`ml-auto h-4 w-4 transition-transform ${bidangOpen ? "rotate-90" : ""}`}
+                      />
+                    </>
+                  )}
+                </SidebarMenuButton>
+                {!collapsed && bidangOpen && (
+                  <SidebarMenuSub>
+                    {bidangSubmenu.map((item) => (
+                      <SidebarMenuSubItem key={item.title}>
+                        <SidebarMenuSubButton asChild isActive={isActive(item.url)}>
+                          <NavLink
+                            to={item.url}
+                            className="flex items-center gap-2"
+                          >
+                            <span>{item.title}</span>
+                          </NavLink>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                )}
+              </SidebarMenuItem>
+              
               {isAdmin && (
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>

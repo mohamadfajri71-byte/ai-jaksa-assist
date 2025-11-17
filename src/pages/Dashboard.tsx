@@ -12,6 +12,10 @@ import LegalChat from "@/components/dashboard/LegalChat";
 import DraftingAssistant from "@/components/dashboard/DraftingAssistant";
 import KnowledgeBase from "@/components/dashboard/KnowledgeBase";
 import AdminPanel from "@/components/dashboard/AdminPanel";
+import Pidsus from "@/components/dashboard/Pidsus";
+import Pidum from "@/components/dashboard/Pidum";
+import Datun from "@/components/dashboard/Datun";
+import Intel from "@/components/dashboard/Intel";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -114,6 +118,10 @@ const Dashboard = () => {
               <Route path="/chat" element={<LegalChat />} />
               <Route path="/draft" element={<DraftingAssistant userId={user?.id || ""} />} />
               <Route path="/knowledge" element={<KnowledgeBase />} />
+              <Route path="/bidang/pidsus" element={<Pidsus />} />
+              <Route path="/bidang/pidum" element={<Pidum />} />
+              <Route path="/bidang/datun" element={<Datun />} />
+              <Route path="/bidang/intel" element={<Intel />} />
               {isAdmin && <Route path="/admin" element={<AdminPanel />} />}
               <Route path="/profile" element={<div className="text-center py-8">Halaman Profil (Coming Soon)</div>} />
               <Route path="/notifications" element={<div className="text-center py-8">Halaman Notifikasi (Coming Soon)</div>} />
