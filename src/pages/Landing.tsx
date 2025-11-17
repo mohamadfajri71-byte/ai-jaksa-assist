@@ -158,61 +158,12 @@ const Landing = () => {
             
             {/* Character Animation */}
             <div className="flex justify-center animate-fade-in">
-              <div className="relative w-full max-w-md md:max-w-lg lg:max-w-xl">
-                {/* Glow effect background - animated */}
-                <div 
-                  className="absolute inset-0 -z-10 rounded-full blur-3xl opacity-60"
-                  style={{
-                    background: 'radial-gradient(circle, hsl(var(--primary) / 0.3) 0%, hsl(var(--primary) / 0.1) 50%, transparent 100%)',
-                    transform: 'scale(1.5)',
-                    animation: 'glow 3s ease-in-out infinite',
-                  }}
-                ></div>
-                
-                {/* Character Image with enhanced effects */}
-                <div className="relative z-10 flex justify-center">
-                  <img 
-                    src="/logolanding.png" 
-                    alt="AICA Character" 
-                    className="h-48 md:h-64 lg:h-80 w-auto animate-float transition-all duration-500 hover:scale-105"
-                    style={{
-                      filter: 'drop-shadow(0 0 25px hsl(var(--primary) / 0.4)) drop-shadow(0 15px 50px hsl(var(--primary) / 0.2)) drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1))',
-                      willChange: 'transform',
-                    }}
-                  />
-                </div>
-                
-                {/* Floating particles effect - more realistic */}
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                  <div 
-                    className="absolute top-[20%] left-[25%] w-2 h-2 bg-primary/50 rounded-full blur-sm"
-                    style={{ 
-                      animation: 'pulse 2s ease-in-out infinite',
-                      animationDelay: '0s',
-                    }}
-                  ></div>
-                  <div 
-                    className="absolute top-[30%] right-[20%] w-1.5 h-1.5 bg-primary/40 rounded-full blur-sm"
-                    style={{ 
-                      animation: 'pulse 2.5s ease-in-out infinite',
-                      animationDelay: '0.7s',
-                    }}
-                  ></div>
-                  <div 
-                    className="absolute bottom-[25%] left-[30%] w-1 h-1 bg-primary/30 rounded-full blur-sm"
-                    style={{ 
-                      animation: 'pulse 3s ease-in-out infinite',
-                      animationDelay: '1.4s',
-                    }}
-                  ></div>
-                  <div 
-                    className="absolute top-[50%] right-[30%] w-1.5 h-1.5 bg-primary/35 rounded-full blur-sm"
-                    style={{ 
-                      animation: 'pulse 2.2s ease-in-out infinite',
-                      animationDelay: '1s',
-                    }}
-                  ></div>
-                </div>
+              <div className="relative">
+                <img 
+                  src="/logolanding.png" 
+                  alt="AICA Character" 
+                  className="h-48 md:h-64 lg:h-80 w-auto animate-float"
+                />
               </div>
             </div>
             

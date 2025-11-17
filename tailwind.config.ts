@@ -93,24 +93,10 @@ export default {
         },
         "float": {
           "0%, 100%": {
-            transform: "translateY(0px) rotate(0deg) scale(1)",
-          },
-          "25%": {
-            transform: "translateY(-15px) rotate(1deg) scale(1.02)",
+            transform: "translateY(0px)",
           },
           "50%": {
-            transform: "translateY(-25px) rotate(0deg) scale(1.03)",
-          },
-          "75%": {
-            transform: "translateY(-15px) rotate(-1deg) scale(1.02)",
-          },
-        },
-        "glow": {
-          "0%, 100%": {
-            filter: "drop-shadow(0 0 20px rgba(59, 130, 246, 0.3))",
-          },
-          "50%": {
-            filter: "drop-shadow(0 0 30px rgba(59, 130, 246, 0.5)) drop-shadow(0 0 40px rgba(59, 130, 246, 0.3))",
+            transform: "translateY(-20px)",
           },
         },
       },
@@ -118,8 +104,7 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.5s ease-out",
-        "float": "float 4s ease-in-out infinite",
-        "glow": "glow 3s ease-in-out infinite",
+        "float": "float 3s ease-in-out infinite",
       },
     },
   },
