@@ -82,8 +82,22 @@ const AICAFlowUpload = ({ cases, userRole, onUploadSuccess }: AICAFlowUploadProp
         .from('case-documents')
         .getPublicUrl(fileName);
 
-      // In production, save to database
-      // For now, just show success
+      // Save document metadata to database
+      const { error: insertError } = await supabase
+        .from("case_documents")
+        .insert({
+          case_id: selectedCase,
+          document_type: documentType,
+          document_name: documentName || file.name,
+          status: "pending_review_kasubsi",
+          uploaded_by: user.id,
+          file_url: publicUrl,
+          file_name: file.name,
+          notes: notes || null,
+        });
+
+      if (insertError) throw insertError;
+
       toast({
         title: "Dokumen Berhasil Diunggah",
         description: "Dokumen telah diunggah dan siap untuk review",

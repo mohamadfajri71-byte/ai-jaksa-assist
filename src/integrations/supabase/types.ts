@@ -55,6 +55,107 @@ export type Database = {
           },
         ]
       }
+      case_documents: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          case_id: string
+          created_at: string
+          document_name: string
+          document_type: string
+          file_name: string | null
+          file_url: string | null
+          id: string
+          notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          uploaded_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          case_id: string
+          created_at?: string
+          document_name: string
+          document_type: string
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          uploaded_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          case_id?: string
+          created_at?: string
+          document_name?: string
+          document_type?: string
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          uploaded_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_documents_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cases: {
+        Row: {
+          assigned_to: string
+          case_name: string
+          case_number: string
+          created_at: string
+          description: string | null
+          id: string
+          stage: string
+          suspect_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_to: string
+          case_name: string
+          case_number: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          stage: string
+          suspect_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string
+          case_name?: string
+          case_number?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          stage?: string
+          suspect_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       jurisprudence: {
         Row: {
           case_number: string
