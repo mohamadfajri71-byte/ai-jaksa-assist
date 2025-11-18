@@ -29,15 +29,10 @@ CREATE TABLE IF NOT EXISTS public.case_documents (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- Create storage bucket for case documents
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('case-documents', 'case-documents', false)
-ON CONFLICT (id) DO NOTHING;
-
--- Create storage bucket for knowledge base
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('knowledge-base', 'knowledge-base', false)
-ON CONFLICT (id) DO NOTHING;
+-- Note: Storage buckets need to be created manually in Supabase Dashboard
+-- Go to Storage > Create Bucket
+-- Bucket names: 'case-documents' and 'knowledge-base'
+-- Set public: false (private buckets)
 
 -- Enable RLS
 ALTER TABLE public.cases ENABLE ROW LEVEL SECURITY;

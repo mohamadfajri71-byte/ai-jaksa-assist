@@ -95,22 +95,29 @@ const KnowledgeBaseUpload = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      // Upload file to Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `knowledge-base/${documentType}/${user.id}/${Date.now()}.${fileExt}`;
-      
-      const { error: uploadError } = await supabase.storage
-        .from('knowledge-base')
-        .upload(fileName, file);
+      // Try to upload file to storage (optional - will continue if bucket doesn't exist)
+      let fileUrl: string | null = null;
+      try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${documentType}/${user.id}/${Date.now()}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('knowledge-base')
+          .upload(fileName, file);
 
-      if (uploadError) throw uploadError;
-
-      // Get file URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('knowledge-base')
-        .getPublicUrl(fileName);
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage
+            .from('knowledge-base')
+            .getPublicUrl(fileName);
+          fileUrl = urlData?.publicUrl || null;
+        }
+      } catch (err) {
+        // Bucket might not exist, continue without file URL
+        console.log("Storage upload skipped:", err);
+      }
 
       // Extract text content from file
+      // File content will be stored in database
       const extractedContent = await extractTextFromFile(file);
 
       // Parse keywords

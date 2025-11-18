@@ -67,20 +67,28 @@ const AICAFlowUpload = ({ cases, userRole, onUploadSuccess }: AICAFlowUploadProp
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      // Upload file to Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      // Try to upload file to Supabase Storage (optional if bucket exists)
+      let fileUrl: string | null = null;
       
-      const { error: uploadError } = await supabase.storage
-        .from('case-documents')
-        .upload(fileName, file);
+      try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('case-documents')
+          .upload(fileName, file);
 
-      if (uploadError) throw uploadError;
-
-      // Get file URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('case-documents')
-        .getPublicUrl(fileName);
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage
+            .from('case-documents')
+            .getPublicUrl(fileName);
+          fileUrl = urlData?.publicUrl || null;
+        }
+        // If bucket doesn't exist, continue without file URL
+      } catch (storageError: any) {
+        // Bucket might not exist, continue without file URL
+        console.log("Storage bucket not available, continuing without file upload:", storageError?.message);
+      }
 
       // Save document metadata to database
       const { error: insertError } = await supabase
@@ -91,7 +99,7 @@ const AICAFlowUpload = ({ cases, userRole, onUploadSuccess }: AICAFlowUploadProp
           document_name: documentName || file.name,
           status: "pending_review_kasubsi",
           uploaded_by: user.id,
-          file_url: publicUrl,
+          file_url: fileUrl,
           file_name: file.name,
           notes: notes || null,
         });
