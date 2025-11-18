@@ -30,7 +30,10 @@ const signupSchema = z.object({
     path: ["registrationCode"],
   });
 
-const whatsappLink = "https://wa.me/00895361421458?text=Admin%20saya%20mau%20coba%20trial%20website%20Aica";
+const whatsappNumber = "00895361421458";
+const whatsappMessage = "Admin saya mau coba trial website Aica";
+const normalizedNumber = whatsappNumber.replace(/^0+/, "");
+const whatsappLink = `https://wa.me/${normalizedNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -226,15 +229,15 @@ const Auth = () => {
             )}
             {mode === "signup" && (
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-3">
                   <Label htmlFor="registrationCode">Kode Registrasi</Label>
                   <Button
                     type="button"
-                    variant="link"
-                    className="text-xs px-0"
+                    size="sm"
+                    className="text-xs bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1"
                     onClick={() => window.open(whatsappLink, "_blank")}
                   >
-                    Klik di sini untuk mendapatkan kode
+                    Klik Disini
                   </Button>
                 </div>
                 <Input
