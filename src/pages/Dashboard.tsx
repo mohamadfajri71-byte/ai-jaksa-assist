@@ -63,11 +63,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!loading) {
-      const hasSeen = sessionStorage.getItem("dashboardPopupSeen");
-      if (!hasSeen) {
-        setDashboardPopupOpen(true);
-        sessionStorage.setItem("dashboardPopupSeen", "true");
-      }
+      const timer = setTimeout(() => setDashboardPopupOpen(true), 600);
+      return () => clearTimeout(timer);
     }
   }, [loading]);
 

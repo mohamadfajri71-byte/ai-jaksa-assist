@@ -18,16 +18,12 @@ const Landing = () => {
   const [welcomePopupOpen, setWelcomePopupOpen] = useState(false);
 
   useEffect(() => {
-    const hasSeen = localStorage.getItem("welcomePopupSeen");
-    if (!hasSeen) {
-      const timer = setTimeout(() => setWelcomePopupOpen(true), 600);
-      return () => clearTimeout(timer);
-    }
+    const timer = setTimeout(() => setWelcomePopupOpen(true), 400);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleCloseWelcome = () => {
     setWelcomePopupOpen(false);
-    localStorage.setItem("welcomePopupSeen", "true");
   };
 
   return (
@@ -390,12 +386,7 @@ const Landing = () => {
 
       <Dialog
         open={welcomePopupOpen}
-        onOpenChange={(open) => {
-          setWelcomePopupOpen(open);
-          if (!open) {
-            localStorage.setItem("welcomePopupSeen", "true");
-          }
-        }}
+        onOpenChange={setWelcomePopupOpen}
       >
         <DialogContent className="max-w-3xl border-0 bg-transparent p-0 shadow-none">
           <div className="relative overflow-hidden rounded-3xl shadow-2xl">

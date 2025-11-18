@@ -19,10 +19,18 @@ const signupSchema = z.object({
   password: z.string().min(6, "Password minimal 6 karakter"),
   confirmPassword: z.string().min(6, "Password minimal 6 karakter"),
   fullName: z.string().min(2, "Nama minimal 2 karakter"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Password tidak cocok",
-  path: ["confirmPassword"],
-});
+  registrationCode: z.string().min(1, "Kode registrasi wajib diisi"),
+})
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Password tidak cocok",
+    path: ["confirmPassword"],
+  })
+  .refine((data) => data.registrationCode.trim().toLowerCase() === "prosecutor", {
+    message: "Kode registrasi tidak valid",
+    path: ["registrationCode"],
+  });
+
+const whatsappLink = "https://wa.me/00895361421458?text=Admin%20saya%20mau%20coba%20trial%20website%20Aica";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -37,6 +45,7 @@ const Auth = () => {
     password: "",
     confirmPassword: "",
     fullName: "",
+    registrationCode: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -213,6 +222,29 @@ const Auth = () => {
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+              </div>
+            )}
+            {mode === "signup" && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="registrationCode">Kode Registrasi</Label>
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="text-xs px-0"
+                    onClick={() => window.open(whatsappLink, "_blank")}
+                  >
+                    Klik di sini untuk mendapatkan kode
+                  </Button>
+                </div>
+                <Input
+                  id="registrationCode"
+                  type="text"
+                  placeholder="Masukkan kode registrasi"
+                  value={formData.registrationCode}
+                  onChange={(e) => setFormData({ ...formData, registrationCode: e.target.value })}
+                  required={mode === "signup"}
+                />
               </div>
             )}
             <Button type="submit" className="w-full" disabled={isLoading}>
