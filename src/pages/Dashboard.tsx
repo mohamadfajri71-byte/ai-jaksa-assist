@@ -156,27 +156,12 @@ const Dashboard = () => {
               alt="Dashboard Highlights"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-tr from-background/85 via-background/30 to-transparent flex flex-col justify-between p-8">
-              <div className="space-y-2 text-left max-w-xl">
-                <p className="text-xs uppercase tracking-[0.3em] text-primary font-semibold">
-                  Dashboard Baru
-                </p>
-                <h3 className="text-3xl font-bold text-foreground">
-                  Jelajahi AICA-Flow dan fitur intelijen hukum terkini
-                </h3>
-                <p className="text-muted-foreground">
-                  Pantau progres perkara, upload dokumen kritis, dan gunakan AI untuk riset lebih cepat langsung dari dashboard Anda.
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3 pt-6">
-                <Button className="flex-1" onClick={() => navigate("/dashboard/bidang/pidsus")}>
-                  Buka AICA-Flow
-                </Button>
-                <Button variant="outline" className="flex-1" onClick={() => setDashboardPopupOpen(false)}>
-                  Nanti Saja
-                </Button>
-              </div>
-            </div>
+            <button
+              onClick={() => setDashboardPopupOpen(false)}
+              className="absolute top-4 right-4 h-8 w-8 rounded-full bg-white/80 text-foreground flex items-center justify-center shadow hover:bg-white transition"
+            >
+              ✕
+            </button>
           </div>
         </DialogContent>
       </Dialog>

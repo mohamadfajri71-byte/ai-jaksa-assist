@@ -404,27 +404,12 @@ const Landing = () => {
               alt="Welcome Popup"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-tr from-background/80 via-background/20 to-transparent flex flex-col justify-between p-8">
-              <div className="space-y-2 text-left max-w-lg">
-                <p className="text-sm font-semibold text-primary uppercase tracking-[0.2em]">
-                  Selamat Datang
-                </p>
-                <h3 className="text-3xl font-bold text-foreground">
-                  Kenali AICA.WEB.ID sebagai sahabat kerja Jaksa
-                </h3>
-                <p className="text-muted-foreground">
-                  Nikmati panduan singkat tentang fitur unggulan sebelum Anda menjelajah lebih jauh.
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3 pt-6">
-                <Button className="flex-1" onClick={handleCloseWelcome}>
-                  Mulai Jelajah
-                </Button>
-                <Button variant="outline" className="flex-1" onClick={() => navigate("/dashboard")}>
-                  Buka Dashboard
-                </Button>
-              </div>
-            </div>
+            <button
+              onClick={handleCloseWelcome}
+              className="absolute top-4 right-4 h-8 w-8 rounded-full bg-white/80 text-foreground flex items-center justify-center shadow hover:bg-white transition"
+            >
+              ✕
+            </button>
           </div>
         </DialogContent>
       </Dialog>
