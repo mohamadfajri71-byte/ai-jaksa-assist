@@ -23,6 +23,7 @@ const menuItems = [
   { title: "Chat Hukum", url: "/dashboard/chat", icon: MessageSquare },
   { title: "Asisten Draf", url: "/dashboard/draft", icon: FileText },
   { title: "Database", url: "/dashboard/knowledge", icon: BookOpen },
+  { title: "Reminder Absen", url: "/dashboard/reminder", icon: Bell },
 ];
 
 const settingsItems = [

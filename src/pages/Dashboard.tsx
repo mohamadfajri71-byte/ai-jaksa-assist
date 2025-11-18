@@ -17,6 +17,7 @@ import Pidsus from "@/components/dashboard/Pidsus";
 import Pidum from "@/components/dashboard/Pidum";
 import Datun from "@/components/dashboard/Datun";
 import Intel from "@/components/dashboard/Intel";
+import ReminderNotification from "@/components/dashboard/ReminderNotification";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -137,6 +138,7 @@ const Dashboard = () => {
               <Route path="/bidang/pidum" element={<Pidum />} />
               <Route path="/bidang/datun" element={<Datun />} />
               <Route path="/bidang/intel" element={<Intel />} />
+              <Route path="/reminder" element={<ReminderNotification />} />
               {isAdmin && <Route path="/admin" element={<AdminPanel />} />}
               <Route path="/profile" element={<div className="text-center py-8">Halaman Profil (Coming Soon)</div>} />
               <Route path="/notifications" element={<div className="text-center py-8">Halaman Notifikasi (Coming Soon)</div>} />
