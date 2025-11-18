@@ -59,16 +59,26 @@ Database yang tersedia:
 - Regulasi: ${context.regulations.length} dokumen  
 - Pasal: ${context.articles.length} dokumen
 
-Berikan hasil dalam format JSON array dengan struktur:
-[{
-  "type": "jurisprudence" | "regulation" | "article",
-  "title": "judul dokumen",
-  "content": "ringkasan konten yang relevan",
-  "relevance": "penjelasan mengapa dokumen ini relevan dengan kasus",
-  "reference": "nomor referensi (case_number, regulation_number, atau article_number)"
-}]
+Format output HARUS berupa JSON dengan struktur:
+{
+  "results": [
+    {
+      "type": "jurisprudence" | "regulation" | "article",
+      "title": "judul dokumen",
+      "content": "ringkasan konten yang relevan",
+      "relevance": "penjelasan mengapa dokumen ini relevan dengan kasus",
+      "reference": "nomor referensi (case_number, regulation_number, atau article_number)",
+      "follow_up_hint": "opsional, saran singkat mengapa dokumen ini penting"
+    }
+  ],
+  "suggested_questions": [
+    "Pertanyaan lanjutan 1",
+    "Pertanyaan lanjutan 2",
+    "Pertanyaan lanjutan 3"
+  ]
+}
 
-Berikan maksimal 5 hasil yang paling relevan. Fokus pada akurasi dan relevansi dengan kasus yang dijelaskan.`
+Pastikan hanya mengembalikan JSON tanpa teks lain. Berikan maksimal 5 hasil yang paling relevan dan 3 pertanyaan lanjutan yang logis.`
           },
           {
             role: 'user',
@@ -96,21 +106,17 @@ Data pasal: ${JSON.stringify(context.articles.slice(0, 20))}`
     console.log('AI response:', aiData);
 
     let results = [];
+    let suggestedQuestions: string[] = [];
     try {
-      const content = aiData.choices[0].message.content;
-      // Try to parse JSON from the response
-      const jsonMatch = content.match(/\[[\s\S]*\]/);
-      if (jsonMatch) {
-        results = JSON.parse(jsonMatch[0]);
+      let content = aiData.choices[0].message.content?.trim() || "";
+      content = content.replace(/```json/gi, "").replace(/```/g, "").trim();
+      const parsed = JSON.parse(content);
+
+      if (Array.isArray(parsed)) {
+        results = parsed;
       } else {
-        // Fallback: create results from the text response
-        results = [{
-          type: 'jurisprudence',
-          title: 'Hasil Pencarian AI',
-          content: content,
-          relevance: 'Analisis dari AI',
-          reference: ''
-        }];
+        results = Array.isArray(parsed.results) ? parsed.results : [];
+        suggestedQuestions = Array.isArray(parsed.suggested_questions) ? parsed.suggested_questions : [];
       }
     } catch (parseError) {
       console.error('Error parsing AI response:', parseError);
@@ -121,10 +127,30 @@ Data pasal: ${JSON.stringify(context.articles.slice(0, 20))}`
         relevance: 'Analisis dari AI',
         reference: ''
       }];
+      suggestedQuestions = [];
     }
 
+    const enrichedResults = results.map((result: any) => {
+      let metadata = null;
+      if (result.reference) {
+        if (result.type === "jurisprudence") {
+          metadata = context.jurisprudence.find((item) => item.case_number === result.reference) || null;
+        } else if (result.type === "regulation") {
+          metadata = context.regulations.find((item) => item.regulation_number === result.reference) || null;
+        } else if (result.type === "article") {
+          metadata = context.articles.find((item) => item.article_number === result.reference) || null;
+        }
+      }
+
+      return {
+        ...result,
+        file_path: metadata?.file_path || null,
+        metadata,
+      };
+    });
+
     return new Response(
-      JSON.stringify({ results }),
+      JSON.stringify({ results: enrichedResults, suggested_questions: suggestedQuestions }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }

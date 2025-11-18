@@ -2,15 +2,23 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, BookOpen, FileText, Scale, File } from "lucide-react";
+import { Search, BookOpen, FileText, Scale, File, Eye } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import PDFViewerDialog from "@/components/knowledge-base/PDFViewerDialog";
 
 const KnowledgeBase = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [jurisprudence, setJurisprudence] = useState<any[]>([]);
   const [regulations, setRegulations] = useState<any[]>([]);
   const [sops, setSops] = useState<any[]>([]);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerUrl, setViewerUrl] = useState<string | null>(null);
+  const [viewerTitle, setViewerTitle] = useState("");
+  const [loadingFilePath, setLoadingFilePath] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     loadData();
@@ -36,6 +44,45 @@ const KnowledgeBase = () => {
         item.content?.toLowerCase().includes(query.toLowerCase()) ||
         item.keywords?.some((k: string) => k.toLowerCase().includes(query.toLowerCase()))
     );
+  };
+
+  const handleViewPDF = async (filePath: string | null, title: string, uniqueKey: string) => {
+    if (!filePath) {
+      toast({
+        title: "File Tidak Tersedia",
+        description: "Dokumen ini belum memiliki file PDF.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoadingFilePath(uniqueKey);
+    setViewerTitle(title);
+
+    const { data, error } = await supabase.storage
+      .from("knowledge-base")
+      .createSignedUrl(filePath, 120);
+
+    if (error || !data?.signedUrl) {
+      toast({
+        title: "Gagal Membuka PDF",
+        description: error?.message || "Tidak dapat membuat tautan PDF.",
+        variant: "destructive",
+      });
+      setLoadingFilePath(null);
+      return;
+    }
+
+    setViewerUrl(data.signedUrl);
+    setViewerOpen(true);
+    setLoadingFilePath(null);
+  };
+
+  const handleViewerOpenChange = (open: boolean) => {
+    setViewerOpen(open);
+    if (!open) {
+      setViewerUrl(null);
+    }
   };
 
   return (
@@ -90,6 +137,19 @@ const KnowledgeBase = () => {
                 <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
                   {item.content}
                 </p>
+                {item.file_path && (
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={loadingFilePath === item.id}
+                      onClick={() => handleViewPDF(item.file_path, item.title, item.id)}
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      {loadingFilePath === item.id ? "Membuka..." : "Lihat PDF"}
+                    </Button>
+                  </div>
+                )}
                 {item.keywords && item.keywords.length > 0 && (
                   <div className="flex flex-wrap gap-1">
                     {item.keywords.map((keyword: string, idx: number) => (
@@ -138,6 +198,19 @@ const KnowledgeBase = () => {
                 <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
                   {item.content}
                 </p>
+                {item.file_path && (
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={loadingFilePath === item.id}
+                      onClick={() => handleViewPDF(item.file_path, item.title, item.id)}
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      {loadingFilePath === item.id ? "Membuka..." : "Lihat PDF"}
+                    </Button>
+                  </div>
+                )}
                 {item.keywords && item.keywords.length > 0 && (
                   <div className="flex flex-wrap gap-1">
                     {item.keywords.map((keyword: string, idx: number) => (
@@ -187,6 +260,19 @@ const KnowledgeBase = () => {
                 <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
                   {item.content}
                 </p>
+                {item.file_path && (
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={loadingFilePath === item.id}
+                      onClick={() => handleViewPDF(item.file_path, item.title, item.id)}
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      {loadingFilePath === item.id ? "Membuka..." : "Lihat PDF"}
+                    </Button>
+                  </div>
+                )}
                 {item.keywords && item.keywords.length > 0 && (
                   <div className="flex flex-wrap gap-1">
                     {item.keywords.map((keyword: string, idx: number) => (
@@ -212,6 +298,12 @@ const KnowledgeBase = () => {
           )}
         </TabsContent>
       </Tabs>
+      <PDFViewerDialog
+        open={viewerOpen}
+        onOpenChange={handleViewerOpenChange}
+        title={viewerTitle}
+        url={viewerUrl}
+      />
     </div>
   );
 };

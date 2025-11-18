@@ -5,9 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, FileText, X, Loader2, CheckCircle2 } from "lucide-react";
+import { Upload, FileText, X, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
+import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 type DocumentType = "jurisprudence" | "regulation" | "article" | "sop";
 
@@ -62,19 +66,32 @@ const KnowledgeBaseUpload = () => {
     }
   };
 
-  const extractTextFromFile = async (file: File): Promise<string> => {
-    // For PDF files, we'll need to use a PDF parser
-    // For now, we'll use a simple approach - in production, use a library like pdf-parse
-    if (file.type === "application/pdf") {
-      // In production, use pdf-parse or similar library
-      return "Content extracted from PDF file. [In production, this would use a PDF parser]";
-    } else if (file.type.includes("word") || file.name.endsWith(".docx") || file.name.endsWith(".doc")) {
-      return "Content extracted from Word document. [In production, this would use a DOCX parser]";
-    } else if (file.type === "text/plain") {
-      return await file.text();
-    }
-    return "";
-  };
+const extractTextFromPDF = async (file: File): Promise<string> => {
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  let text = "";
+
+  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+    const page = await pdf.getPage(pageNumber);
+    const content = await page.getTextContent();
+    const pageText = content.items
+      .map((item: any) => ("str" in item ? item.str : ""))
+      .join(" ");
+    text += pageText + "\n";
+  }
+
+  return text.trim();
+};
+
+const extractTextFromFile = async (file: File): Promise<string> => {
+  if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
+    return extractTextFromPDF(file);
+  } else if (file.type === "text/plain") {
+    return await file.text();
+  }
+
+  return "";
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,23 +113,19 @@ const KnowledgeBaseUpload = () => {
       if (!user) throw new Error("User not authenticated");
 
       // Try to upload file to storage (optional - will continue if bucket doesn't exist)
-      let fileUrl: string | null = null;
+      let filePath: string | null = null;
       try {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${documentType}/${user.id}/${Date.now()}.${fileExt}`;
-        
+        const fileExt = file.name.split(".").pop();
+        const generatedPath = `${documentType}/${user.id}/${Date.now()}.${fileExt}`;
+
         const { error: uploadError } = await supabase.storage
-          .from('knowledge-base')
-          .upload(fileName, file);
+          .from("knowledge-base")
+          .upload(generatedPath, file);
 
         if (!uploadError) {
-          const { data: urlData } = supabase.storage
-            .from('knowledge-base')
-            .getPublicUrl(fileName);
-          fileUrl = urlData?.publicUrl || null;
+          filePath = generatedPath;
         }
       } catch (err) {
-        // Bucket might not exist, continue without file URL
         console.log("Storage upload skipped:", err);
       }
 
@@ -130,6 +143,7 @@ const KnowledgeBaseUpload = () => {
         content: extractedContent || formData.content,
         keywords: keywords.length > 0 ? keywords : null,
         created_by: user.id,
+        file_path: filePath,
       };
 
       if (documentType === "jurisprudence") {

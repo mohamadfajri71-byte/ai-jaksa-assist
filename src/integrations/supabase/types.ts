@@ -20,6 +20,7 @@ export type Database = {
           content: string
           created_at: string
           explanation: string | null
+          file_path: string | null
           id: string
           keywords: string[] | null
           regulation_id: string | null
@@ -30,6 +31,7 @@ export type Database = {
           content: string
           created_at?: string
           explanation?: string | null
+          file_path?: string | null
           id?: string
           keywords?: string[] | null
           regulation_id?: string | null
@@ -40,6 +42,7 @@ export type Database = {
           content?: string
           created_at?: string
           explanation?: string | null
+          file_path?: string | null
           id?: string
           keywords?: string[] | null
           regulation_id?: string | null
@@ -164,6 +167,7 @@ export type Database = {
           court: string | null
           created_at: string
           created_by: string | null
+          file_path: string | null
           id: string
           keywords: string[] | null
           title: string
@@ -177,6 +181,7 @@ export type Database = {
           court?: string | null
           created_at?: string
           created_by?: string | null
+          file_path?: string | null
           id?: string
           keywords?: string[] | null
           title: string
@@ -190,6 +195,7 @@ export type Database = {
           court?: string | null
           created_at?: string
           created_by?: string | null
+          file_path?: string | null
           id?: string
           keywords?: string[] | null
           title?: string
@@ -263,6 +269,7 @@ export type Database = {
           content: string
           created_at: string
           created_by: string | null
+          file_path: string | null
           id: string
           keywords: string[] | null
           regulation_number: string
@@ -276,6 +283,7 @@ export type Database = {
           content: string
           created_at?: string
           created_by?: string | null
+          file_path?: string | null
           id?: string
           keywords?: string[] | null
           regulation_number: string
@@ -289,6 +297,7 @@ export type Database = {
           content?: string
           created_at?: string
           created_by?: string | null
+          file_path?: string | null
           id?: string
           keywords?: string[] | null
           regulation_number?: string
@@ -331,6 +340,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           effective_date: string | null
+          file_path: string | null
           id: string
           keywords: string[] | null
           title: string
@@ -343,6 +353,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           effective_date?: string | null
+          file_path?: string | null
           id?: string
           keywords?: string[] | null
           title: string
@@ -355,6 +366,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           effective_date?: string | null
+          file_path?: string | null
           id?: string
           keywords?: string[] | null
           title?: string

@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, Loader2, FileText, Scale, BookOpen, Download } from "lucide-react";
+import { Search, Loader2, FileText, Scale, BookOpen, Download, Eye } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
+import PDFViewerDialog from "@/components/knowledge-base/PDFViewerDialog";
 
 interface SearchResult {
   type: "jurisprudence" | "regulation" | "article";
@@ -13,6 +15,8 @@ interface SearchResult {
   content: string;
   relevance: string;
   reference?: string;
+  file_path?: string | null;
+  metadata?: Record<string, any>;
 }
 
 const AISearch = () => {
@@ -20,9 +24,15 @@ const AISearch = () => {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerUrl, setViewerUrl] = useState<string | null>(null);
+  const [viewerTitle, setViewerTitle] = useState("");
+  const [loadingFilePath, setLoadingFilePath] = useState<string | null>(null);
 
-  const handleSearch = async () => {
-    if (!query.trim()) {
+  const handleSearch = async (customQuery?: string) => {
+    const queryToUse = (customQuery ?? query).trim();
+    if (!queryToUse) {
       toast({
         title: "Query Kosong",
         description: "Silakan masukkan deskripsi kasus terlebih dahulu.",
@@ -31,22 +41,28 @@ const AISearch = () => {
       return;
     }
 
+    if (customQuery) {
+      setQuery(customQuery);
+    }
+
     setLoading(true);
+    setSuggestedQuestions([]);
     try {
       const { data, error } = await supabase.functions.invoke("ai-search", {
-        body: { query },
+        body: { query: queryToUse },
       });
 
       if (error) throw error;
 
       setResults(data.results || []);
+      setSuggestedQuestions(data.suggested_questions || []);
       
       // Save search history
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         await supabase.from("search_history").insert({
           user_id: user.id,
-          query,
+          query: queryToUse,
           results: data.results,
         });
       }
@@ -183,6 +199,53 @@ const AISearch = () => {
     });
   };
 
+  const getFilePath = (result: SearchResult) => {
+    if (result.file_path) return result.file_path;
+    if (result.metadata?.file_path) return result.metadata.file_path as string;
+    return null;
+  };
+
+  const handleViewPDF = async (result: SearchResult, index: number) => {
+    const filePath = getFilePath(result);
+    if (!filePath) {
+      toast({
+        title: "File Tidak Tersedia",
+        description: "Dokumen ini tidak memiliki file PDF yang dapat dilihat.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const loadingKey = `${result.type}-${index}`;
+    setLoadingFilePath(loadingKey);
+    setViewerTitle(result.title);
+
+    const { data, error } = await supabase.storage
+      .from("knowledge-base")
+      .createSignedUrl(filePath, 120);
+
+    if (error || !data?.signedUrl) {
+      toast({
+        title: "Gagal Membuka PDF",
+        description: error?.message || "Tidak dapat membuat tautan PDF.",
+        variant: "destructive",
+      });
+      setLoadingFilePath(null);
+      return;
+    }
+
+    setViewerUrl(data.signedUrl);
+    setViewerOpen(true);
+    setLoadingFilePath(null);
+  };
+
+  const handleViewerOpenChange = (open: boolean) => {
+    setViewerOpen(open);
+    if (!open) {
+      setViewerUrl(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -200,7 +263,7 @@ const AISearch = () => {
             rows={4}
             className="resize-none"
           />
-          <Button onClick={handleSearch} disabled={loading} className="w-full gap-2">
+          <Button onClick={() => handleSearch()} disabled={loading} className="w-full gap-2">
             {loading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -245,6 +308,18 @@ const AISearch = () => {
               </CardHeader>
               <CardContent className="space-y-2">
                 <p className="text-sm text-muted-foreground line-clamp-3">{result.content}</p>
+                {getFilePath(result) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                    disabled={loadingFilePath === `${result.type}-${index}`}
+                    onClick={() => handleViewPDF(result, index)}
+                  >
+                    <Eye className="h-4 w-4" />
+                    {loadingFilePath === `${result.type}-${index}` ? "Membuka..." : "Lihat PDF"}
+                  </Button>
+                )}
                 {result.relevance && (
                   <div className="pt-2 border-t">
                     <p className="text-sm">
@@ -267,6 +342,36 @@ const AISearch = () => {
           </CardContent>
         </Card>
       )}
+
+      {suggestedQuestions.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Pertanyaan Lanjutan yang Disarankan</CardTitle>
+            <CardDescription>
+              Klik salah satu pertanyaan untuk melanjutkan eksplorasi dengan AI.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            {suggestedQuestions.map((question, idx) => (
+              <Button
+                key={idx}
+                variant="secondary"
+                size="sm"
+                onClick={() => handleSearch(question)}
+              >
+                {question}
+              </Button>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      <PDFViewerDialog
+        open={viewerOpen}
+        onOpenChange={handleViewerOpenChange}
+        title={viewerTitle}
+        url={viewerUrl}
+      />
     </div>
   );
 };
