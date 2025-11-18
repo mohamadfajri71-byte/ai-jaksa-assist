@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Database, Users, BookOpen, FileText, File } from "lucide-react";
+import { Database, Users, BookOpen, FileText, File, Upload, Bot } from "lucide-react";
 import UserManagement from "./admin/UserManagement";
 import JurisprudenceManagement from "./admin/JurisprudenceManagement";
 import RegulationManagement from "./admin/RegulationManagement";
 import SOPManagement from "./admin/SOPManagement";
 import ArticleManagement from "./admin/ArticleManagement";
+import KnowledgeBaseUpload from "./admin/KnowledgeBaseUpload";
+import AIKnowledgeRetriever from "./admin/AIKnowledgeRetriever";
 
 const AdminPanel = () => {
   return (
@@ -24,7 +26,7 @@ const AdminPanel = () => {
       </Card>
 
       <Tabs defaultValue="users" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="users" className="gap-2">
             <Users className="h-4 w-4" />
             Pengguna
@@ -44,6 +46,14 @@ const AdminPanel = () => {
           <TabsTrigger value="sop" className="gap-2">
             <File className="h-4 w-4" />
             SOP
+          </TabsTrigger>
+          <TabsTrigger value="upload" className="gap-2">
+            <Upload className="h-4 w-4" />
+            Upload File
+          </TabsTrigger>
+          <TabsTrigger value="ai-retriever" className="gap-2">
+            <Bot className="h-4 w-4" />
+            AI Retriever
           </TabsTrigger>
         </TabsList>
 
@@ -65,6 +75,14 @@ const AdminPanel = () => {
 
         <TabsContent value="sop" className="mt-6">
           <SOPManagement />
+        </TabsContent>
+
+        <TabsContent value="upload" className="mt-6">
+          <KnowledgeBaseUpload />
+        </TabsContent>
+
+        <TabsContent value="ai-retriever" className="mt-6">
+          <AIKnowledgeRetriever />
         </TabsContent>
       </Tabs>
     </div>
