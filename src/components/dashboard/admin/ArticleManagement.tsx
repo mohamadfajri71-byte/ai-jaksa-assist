@@ -1,15 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Loader2, Plus, Pencil, Trash2 } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Upload } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const ArticleManagement = () => {
   const { toast } = useToast();
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchData();
@@ -32,6 +36,56 @@ const ArticleManagement = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleBulkUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const text = await file.text();
+      const lines = text.split('\n');
+      const headers = lines[0].split(',').map(h => h.trim());
+      
+      const records = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const values = lines[i].split(',').map(v => v.trim());
+        const record: any = {};
+        headers.forEach((header, index) => {
+          if (header === 'keywords') {
+            record[header] = values[index] ? values[index].split(';').map(k => k.trim()) : [];
+          } else {
+            record[header] = values[index];
+          }
+        });
+        records.push(record);
+      }
+
+      const { error } = await supabase
+        .from("articles")
+        .insert(records);
+
+      if (error) throw error;
+
+      toast({
+        title: "Berhasil",
+        description: `${records.length} data berhasil diupload`,
+      });
+
+      setDialogOpen(false);
+      fetchData();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -74,10 +128,44 @@ const ArticleManagement = () => {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Database Pasal</CardTitle>
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            Tambah Data
-          </Button>
+          <div className="flex gap-2">
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <Upload className="h-4 w-4" />
+                  Bulk Upload
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Bulk Upload Pasal</DialogTitle>
+                  <DialogDescription>
+                    Upload file CSV dengan format: article_number,content,explanation,regulation_id,keywords (pisahkan keywords dengan semicolon)
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".csv"
+                    onChange={handleBulkUpload}
+                    disabled={uploading}
+                    className="w-full"
+                  />
+                  {uploading && (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Mengupload...</span>
+                    </div>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              Tambah Data
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
