@@ -98,31 +98,40 @@ const AICAFlow = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // In production, this would fetch from database
-      // For now, using mock data
-      const mockCases: Case[] = [
-        {
-          id: "1",
-          case_number: "PIDSUS-001/2025",
-          case_name: "Perkara Korupsi PT. ABC",
-          stage: "LID",
-          assigned_to: user.id,
-          created_at: new Date().toISOString(),
-          documents: [
-            {
-              id: "doc1",
-              case_id: "1",
-              document_type: "P-5",
-              document_name: "Laporan Hasil Penyelidikan",
-              status: "pending_review_kasubsi",
-              uploaded_by: user.id,
-              uploaded_at: new Date().toISOString(),
-            }
-          ]
-        }
-      ];
+      // Fetch cases from database
+      const { data: casesData, error: casesError } = await supabase
+        .from("cases")
+        .select("*")
+        .eq("assigned_to", user.id)
+        .order("created_at", { ascending: false });
 
-      setCases(mockCases);
+      if (casesError) throw casesError;
+
+      // Fetch documents for each case
+      const casesWithDocs: Case[] = await Promise.all(
+        (casesData || []).map(async (caseItem) => {
+          const { data: docsData } = await supabase
+            .from("case_documents")
+            .select("*")
+            .eq("case_id", caseItem.id)
+            .order("uploaded_at", { ascending: false });
+
+          return {
+            id: caseItem.id,
+            case_number: caseItem.case_number,
+            case_name: caseItem.case_name,
+            stage: caseItem.stage as "LID" | "DIK" | "PRATUT" | "TUT" | "EKSEKUSI",
+            assigned_to: caseItem.assigned_to,
+            created_at: caseItem.created_at,
+            documents: (docsData || []).map(doc => ({
+              ...doc,
+              status: doc.status as DocumentStatus,
+            })),
+          };
+        })
+      );
+
+      setCases(casesWithDocs);
     } catch (error) {
       console.error("Error loading cases:", error);
       toast({

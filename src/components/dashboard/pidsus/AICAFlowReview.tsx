@@ -16,6 +16,7 @@ import {
   Download
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -75,8 +76,41 @@ const AICAFlowReview = ({ cases, userRole, onReviewSuccess }: AICAFlowReviewProp
     if (!selectedDoc || !action) return;
 
     try {
-      // In production, this would update the database
-      // For now, just show success
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      // Determine new status based on action and role
+      let newStatus: string;
+      const updateData: any = { notes: reviewNotes || null };
+
+      if (action === "approve") {
+        if (userRole === "kasubsi") {
+          newStatus = "pending_approval_kasi";
+          updateData.reviewed_by = user.id;
+          updateData.reviewed_at = new Date().toISOString();
+        } else if (userRole === "kasi") {
+          newStatus = "completed";
+          updateData.approved_by = user.id;
+          updateData.approved_at = new Date().toISOString();
+        } else {
+          newStatus = "pending_review_kasubsi";
+        }
+      } else {
+        newStatus = "revision_required";
+        updateData.reviewed_by = user.id;
+        updateData.reviewed_at = new Date().toISOString();
+      }
+
+      updateData.status = newStatus;
+
+      // Update document in database
+      const { error: updateError } = await supabase
+        .from("case_documents")
+        .update(updateData)
+        .eq("id", selectedDoc.id);
+
+      if (updateError) throw updateError;
+
       const actionText = action === "approve" 
         ? (userRole === "kasubsi" ? "diteruskan ke Kasi" : "disetujui")
         : "dikembalikan untuk revisi";
