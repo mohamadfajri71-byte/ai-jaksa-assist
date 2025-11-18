@@ -46,6 +46,15 @@ const KnowledgeBase = () => {
     );
   };
 
+  const getFilePathFromKeywords = (keywords?: string[] | null) => {
+    const keyword = keywords?.find((k) => k.startsWith("__file_path:"));
+    return keyword ? keyword.replace("__file_path:", "") : null;
+  };
+
+  const getDisplayKeywords = (keywords?: string[] | null) => {
+    return keywords?.filter((k) => !k.startsWith("__file_path:")) || [];
+  };
+
   const handleViewPDF = async (filePath: string | null, title: string, uniqueKey: string) => {
     if (!filePath) {
       toast({
@@ -115,7 +124,10 @@ const KnowledgeBase = () => {
         </TabsList>
 
         <TabsContent value="jurisprudence" className="space-y-4">
-          {filterData(jurisprudence, searchQuery).map((item) => (
+          {filterData(jurisprudence, searchQuery).map((item) => {
+            const filePath = getFilePathFromKeywords(item.keywords);
+            const displayKeywords = getDisplayKeywords(item.keywords);
+            return (
             <Card key={item.id} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex items-start gap-3">
@@ -137,22 +149,22 @@ const KnowledgeBase = () => {
                 <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
                   {item.content}
                 </p>
-                {item.file_path && (
+                {filePath && (
                   <div className="flex flex-wrap gap-2 mb-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      disabled={loadingFilePath === item.id}
-                      onClick={() => handleViewPDF(item.file_path, item.title, item.id)}
+                    disabled={loadingFilePath === item.id}
+                      onClick={() => handleViewPDF(filePath, item.title, item.id)}
                     >
                       <Eye className="h-4 w-4 mr-2" />
                       {loadingFilePath === item.id ? "Membuka..." : "Lihat PDF"}
                     </Button>
                   </div>
                 )}
-                {item.keywords && item.keywords.length > 0 && (
+                {displayKeywords.length > 0 && (
                   <div className="flex flex-wrap gap-1">
-                    {item.keywords.map((keyword: string, idx: number) => (
+                    {displayKeywords.map((keyword: string, idx: number) => (
                       <span
                         key={idx}
                         className="text-xs px-2 py-1 bg-secondary text-secondary-foreground rounded"
@@ -164,7 +176,8 @@ const KnowledgeBase = () => {
                 )}
               </CardContent>
             </Card>
-          ))}
+            );
+          })}
           {filterData(jurisprudence, searchQuery).length === 0 && (
             <Card>
               <CardContent className="py-12 text-center text-muted-foreground">
@@ -176,7 +189,10 @@ const KnowledgeBase = () => {
         </TabsContent>
 
         <TabsContent value="regulations" className="space-y-4">
-          {filterData(regulations, searchQuery).map((item) => (
+          {filterData(regulations, searchQuery).map((item) => {
+            const filePath = getFilePathFromKeywords(item.keywords);
+            const displayKeywords = getDisplayKeywords(item.keywords);
+            return (
             <Card key={item.id} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex items-start gap-3">
@@ -198,22 +214,22 @@ const KnowledgeBase = () => {
                 <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
                   {item.content}
                 </p>
-                {item.file_path && (
+                {filePath && (
                   <div className="flex flex-wrap gap-2 mb-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      disabled={loadingFilePath === item.id}
-                      onClick={() => handleViewPDF(item.file_path, item.title, item.id)}
+                    disabled={loadingFilePath === item.id}
+                      onClick={() => handleViewPDF(filePath, item.title, item.id)}
                     >
                       <Eye className="h-4 w-4 mr-2" />
                       {loadingFilePath === item.id ? "Membuka..." : "Lihat PDF"}
                     </Button>
                   </div>
                 )}
-                {item.keywords && item.keywords.length > 0 && (
+                {displayKeywords.length > 0 && (
                   <div className="flex flex-wrap gap-1">
-                    {item.keywords.map((keyword: string, idx: number) => (
+                    {displayKeywords.map((keyword: string, idx: number) => (
                       <span
                         key={idx}
                         className="text-xs px-2 py-1 bg-secondary text-secondary-foreground rounded"
@@ -225,7 +241,8 @@ const KnowledgeBase = () => {
                 )}
               </CardContent>
             </Card>
-          ))}
+            );
+          })}
           {filterData(regulations, searchQuery).length === 0 && (
             <Card>
               <CardContent className="py-12 text-center text-muted-foreground">
@@ -237,7 +254,10 @@ const KnowledgeBase = () => {
         </TabsContent>
 
         <TabsContent value="sop" className="space-y-4">
-          {filterData(sops, searchQuery).map((item) => (
+          {filterData(sops, searchQuery).map((item) => {
+            const filePath = getFilePathFromKeywords(item.keywords);
+            const displayKeywords = getDisplayKeywords(item.keywords);
+            return (
             <Card key={item.id} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex items-start gap-3">
@@ -260,22 +280,22 @@ const KnowledgeBase = () => {
                 <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
                   {item.content}
                 </p>
-                {item.file_path && (
+                {filePath && (
                   <div className="flex flex-wrap gap-2 mb-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      disabled={loadingFilePath === item.id}
-                      onClick={() => handleViewPDF(item.file_path, item.title, item.id)}
+                    disabled={loadingFilePath === item.id}
+                      onClick={() => handleViewPDF(filePath, item.title, item.id)}
                     >
                       <Eye className="h-4 w-4 mr-2" />
                       {loadingFilePath === item.id ? "Membuka..." : "Lihat PDF"}
                     </Button>
                   </div>
                 )}
-                {item.keywords && item.keywords.length > 0 && (
+                {displayKeywords.length > 0 && (
                   <div className="flex flex-wrap gap-1">
-                    {item.keywords.map((keyword: string, idx: number) => (
+                    {displayKeywords.map((keyword: string, idx: number) => (
                       <span
                         key={idx}
                         className="text-xs px-2 py-1 bg-secondary text-secondary-foreground rounded"
@@ -287,7 +307,8 @@ const KnowledgeBase = () => {
                 )}
               </CardContent>
             </Card>
-          ))}
+            );
+          })}
           {filterData(sops, searchQuery).length === 0 && (
             <Card>
               <CardContent className="py-12 text-center text-muted-foreground">

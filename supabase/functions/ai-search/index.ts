@@ -130,6 +130,11 @@ Data pasal: ${JSON.stringify(context.articles.slice(0, 20))}`
       suggestedQuestions = [];
     }
 
+    const getFilePathFromKeywords = (keywords?: string[] | null) => {
+      const keyword = keywords?.find((k) => k.startsWith("__file_path:"));
+      return keyword ? keyword.replace("__file_path:", "") : null;
+    };
+
     const enrichedResults = results.map((result: any) => {
       let metadata = null;
       if (result.reference) {
@@ -142,9 +147,11 @@ Data pasal: ${JSON.stringify(context.articles.slice(0, 20))}`
         }
       }
 
+      const filePath = metadata ? getFilePathFromKeywords(metadata.keywords) : null;
+
       return {
         ...result,
-        file_path: metadata?.file_path || null,
+        file_path: filePath,
         metadata,
       };
     });

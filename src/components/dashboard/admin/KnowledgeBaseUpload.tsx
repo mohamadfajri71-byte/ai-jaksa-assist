@@ -135,15 +135,18 @@ const extractTextFromFile = async (file: File): Promise<string> => {
 
       // Parse keywords
       const keywords = formData.keywords
-        ? formData.keywords.split(',').map(k => k.trim()).filter(k => k)
+        ? formData.keywords.split(",").map((k) => k.trim()).filter((k) => k)
         : [];
+
+      if (filePath) {
+        keywords.push(`__file_path:${filePath}`);
+      }
 
       // Insert into appropriate table
       let insertData: any = {
         content: extractedContent || formData.content,
         keywords: keywords.length > 0 ? keywords : null,
         created_by: user.id,
-        file_path: filePath,
       };
 
       if (documentType === "jurisprudence") {

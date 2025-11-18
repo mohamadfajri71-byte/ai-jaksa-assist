@@ -199,9 +199,16 @@ const AISearch = () => {
     });
   };
 
+  const extractFilePathFromKeywords = (keywords?: string[] | null) => {
+    const keyword = keywords?.find((k) => k.startsWith("__file_path:"));
+    return keyword ? keyword.replace("__file_path:", "") : null;
+  };
+
   const getFilePath = (result: SearchResult) => {
     if (result.file_path) return result.file_path;
-    if (result.metadata?.file_path) return result.metadata.file_path as string;
+    if (result.metadata?.keywords) {
+      return extractFilePathFromKeywords(result.metadata.keywords as string[]);
+    }
     return null;
   };
 
