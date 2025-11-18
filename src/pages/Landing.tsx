@@ -8,12 +8,27 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Search, FileText, BookOpen, Shield, ArrowRight, CheckCircle2, Menu, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const Landing = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [bidangMenuOpen, setBidangMenuOpen] = useState(false);
+  const [welcomePopupOpen, setWelcomePopupOpen] = useState(false);
+
+  useEffect(() => {
+    const hasSeen = localStorage.getItem("welcomePopupSeen");
+    if (!hasSeen) {
+      const timer = setTimeout(() => setWelcomePopupOpen(true), 600);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const handleCloseWelcome = () => {
+    setWelcomePopupOpen(false);
+    localStorage.setItem("welcomePopupSeen", "true");
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -372,6 +387,47 @@ const Landing = () => {
           </div>
         </div>
       </footer>
+
+      <Dialog
+        open={welcomePopupOpen}
+        onOpenChange={(open) => {
+          setWelcomePopupOpen(open);
+          if (!open) {
+            localStorage.setItem("welcomePopupSeen", "true");
+          }
+        }}
+      >
+        <DialogContent className="max-w-3xl border-0 bg-transparent p-0 shadow-none">
+          <div className="relative overflow-hidden rounded-3xl shadow-2xl">
+            <img
+              src="/welcome.png"
+              alt="Welcome Popup"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-tr from-background/80 via-background/20 to-transparent flex flex-col justify-between p-8">
+              <div className="space-y-2 text-left max-w-lg">
+                <p className="text-sm font-semibold text-primary uppercase tracking-[0.2em]">
+                  Selamat Datang
+                </p>
+                <h3 className="text-3xl font-bold text-foreground">
+                  Kenali AICA.WEB.ID sebagai sahabat kerja Jaksa
+                </h3>
+                <p className="text-muted-foreground">
+                  Nikmati panduan singkat tentang fitur unggulan sebelum Anda menjelajah lebih jauh.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 pt-6">
+                <Button className="flex-1" onClick={handleCloseWelcome}>
+                  Mulai Jelajah
+                </Button>
+                <Button variant="outline" className="flex-1" onClick={() => navigate("/dashboard")}>
+                  Buka Dashboard
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
