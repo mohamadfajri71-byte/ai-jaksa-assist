@@ -30,9 +30,9 @@ const signupSchema = z.object({
     path: ["registrationCode"],
   });
 
-const whatsappNumber = "00895361421458";
+const whatsappNumber = "+62895361421458";
 const whatsappMessage = "Admin saya mau coba trial website Aica";
-const normalizedNumber = whatsappNumber.replace(/^0+/, "");
+const normalizedNumber = whatsappNumber.replace(/^\+/, "");
 const whatsappLink = `https://wa.me/${normalizedNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
 const Auth = () => {
@@ -235,7 +235,7 @@ const Auth = () => {
                     type="button"
                     size="sm"
                     className="text-xs bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1"
-                    onClick={() => window.open(whatsappLink, "_blank")}
+                  onClick={() => window.open(whatsappLink, "_blank")}
                   >
                     Klik Disini
                   </Button>
