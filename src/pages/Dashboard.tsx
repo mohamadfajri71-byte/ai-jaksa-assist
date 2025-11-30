@@ -130,20 +130,21 @@ const Dashboard = () => {
           {/* Main Content */}
           <main className="flex-1 container mx-auto px-4 py-8">
             <Routes>
-              <Route path="/" element={<Navigate to="/dashboard/search" replace />} />
-              <Route path="/search" element={<AISearch />} />
-              <Route path="/chat" element={<LegalChat />} />
-              <Route path="/draft" element={<DraftingAssistant userId={user?.id || ""} />} />
-              <Route path="/knowledge" element={<KnowledgeBase />} />
-              <Route path="/bidang/pidsus" element={<Pidsus />} />
-              <Route path="/bidang/pidum" element={<Pidum />} />
-              <Route path="/bidang/datun" element={<Datun />} />
-              <Route path="/bidang/intel" element={<Intel />} />
-              <Route path="/reminder" element={<ReminderNotification />} />
-              <Route path="/temp-cloud" element={<TempCloud />} />
-              {isAdmin && <Route path="/admin" element={<AdminPanel />} />}
-              <Route path="/profile" element={<div className="text-center py-8">Halaman Profil (Coming Soon)</div>} />
-              <Route path="/notifications" element={<div className="text-center py-8">Halaman Notifikasi (Coming Soon)</div>} />
+              <Route index element={<Navigate to="/dashboard/search" replace />} />
+              <Route path="search" element={<AISearch />} />
+              <Route path="chat" element={<LegalChat />} />
+              <Route path="draft" element={<DraftingAssistant userId={user?.id || ""} />} />
+              <Route path="knowledge" element={<KnowledgeBase />} />
+              <Route path="bidang/pidsus" element={<Pidsus />} />
+              <Route path="bidang/pidum" element={<Pidum />} />
+              <Route path="bidang/datun" element={<Datun />} />
+              <Route path="bidang/intel" element={<Intel />} />
+              <Route path="reminder" element={<ReminderNotification />} />
+              <Route path="temp-cloud" element={<TempCloud />} />
+              {isAdmin && <Route path="admin" element={<AdminPanel />} />}
+              <Route path="profile" element={<div className="text-center py-8">Halaman Profil (Coming Soon)</div>} />
+              <Route path="notifications" element={<div className="text-center py-8">Halaman Notifikasi (Coming Soon)</div>} />
+              <Route path="*" element={<div className="text-center py-8">Halaman tidak ditemukan</div>} />
             </Routes>
           </main>
         </div>
