@@ -10,6 +10,8 @@ const DEFAULT_MESSAGE =
   "Jangan lupa absen pulang sekarang juga agar data kehadiranmu tercatat dengan baik.";
 
 const ReminderNotification = () => {
+  console.log("ReminderNotification component rendered");
+  
   const [permission, setPermission] = useState<NotificationPermission>(() =>
     typeof Notification !== "undefined" ? Notification.permission : "default",
   );

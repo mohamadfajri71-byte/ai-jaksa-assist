@@ -22,6 +22,8 @@ interface TempFile {
 }
 
 const TempCloud = () => {
+  console.log("TempCloud component rendered");
+  
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
