@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Scale, LogOut, Shield, Search, MessageSquare, FileText, BookOpen, Cloud } from "lucide-react";
+import { Scale, LogOut, Shield, Search, MessageSquare, FileText, BookOpen, Cloud, Bell } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import AISearch from "@/components/dashboard/AISearch";
 import LegalChat from "@/components/dashboard/LegalChat";
@@ -12,6 +12,7 @@ import DraftingAssistant from "@/components/dashboard/DraftingAssistant";
 import KnowledgeBase from "@/components/dashboard/KnowledgeBase";
 import AdminPanel from "@/components/dashboard/AdminPanel";
 import TempCloud from "@/components/dashboard/TempCloud";
+import ReminderNotification from "@/components/dashboard/ReminderNotification";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -102,7 +103,7 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="search" className="w-full">
-          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-6' : 'grid-cols-5'} mb-8`}>
+          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-7' : 'grid-cols-6'} mb-8`}>
             <TabsTrigger value="search" className="gap-2">
               <Search className="h-4 w-4" />
               Cari Database
@@ -122,6 +123,10 @@ const Dashboard = () => {
             <TabsTrigger value="tempcloud" className="gap-2">
               <Cloud className="h-4 w-4" />
               Temp Cloud
+            </TabsTrigger>
+            <TabsTrigger value="reminder" className="gap-2">
+              <Bell className="h-4 w-4" />
+              Reminder Absen
             </TabsTrigger>
             {isAdmin && (
               <TabsTrigger value="admin" className="gap-2">
@@ -149,6 +154,10 @@ const Dashboard = () => {
 
           <TabsContent value="tempcloud">
             <TempCloud />
+          </TabsContent>
+
+          <TabsContent value="reminder">
+            <ReminderNotification />
           </TabsContent>
 
           {isAdmin && (
