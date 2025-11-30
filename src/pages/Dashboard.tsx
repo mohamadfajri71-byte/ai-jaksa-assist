@@ -31,11 +31,12 @@ const Dashboard = () => {
   
   // Debug: Log current location and routes
   useEffect(() => {
-    console.log("=== Dashboard Debug ===");
+    console.log("=== Dashboard Debug v2 ===");
     console.log("Window pathname:", window.location.pathname);
     console.log("React Router location:", location.pathname);
     console.log("Is reminder route:", location.pathname.includes("reminder"));
     console.log("Is temp-cloud route:", location.pathname.includes("temp-cloud"));
+    console.log("Routes registered: reminder, temp-cloud");
   }, [location]);
 
   useEffect(() => {
