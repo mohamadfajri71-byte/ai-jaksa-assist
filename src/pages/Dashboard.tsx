@@ -27,6 +27,11 @@ const Dashboard = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [dashboardPopupOpen, setDashboardPopupOpen] = useState(false);
+  
+  // Debug: Log current location
+  useEffect(() => {
+    console.log("Dashboard mounted, current path:", window.location.pathname);
+  }, []);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -135,12 +140,26 @@ const Dashboard = () => {
               <Route path="chat" element={<LegalChat />} />
               <Route path="draft" element={<DraftingAssistant userId={user?.id || ""} />} />
               <Route path="knowledge" element={<KnowledgeBase />} />
+              <Route 
+                path="reminder" 
+                element={
+                  <div>
+                    <ReminderNotification />
+                  </div>
+                } 
+              />
+              <Route 
+                path="temp-cloud" 
+                element={
+                  <div>
+                    <TempCloud />
+                  </div>
+                } 
+              />
               <Route path="bidang/pidsus" element={<Pidsus />} />
               <Route path="bidang/pidum" element={<Pidum />} />
               <Route path="bidang/datun" element={<Datun />} />
               <Route path="bidang/intel" element={<Intel />} />
-              <Route path="reminder" element={<ReminderNotification />} />
-              <Route path="temp-cloud" element={<TempCloud />} />
               {isAdmin && <Route path="admin" element={<AdminPanel />} />}
               <Route path="profile" element={<div className="text-center py-8">Halaman Profil (Coming Soon)</div>} />
               <Route path="notifications" element={<div className="text-center py-8">Halaman Notifikasi (Coming Soon)</div>} />
