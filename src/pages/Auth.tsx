@@ -136,7 +136,6 @@ const Auth = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
-<<<<<<< Current (Your changes)
           <div className="flex items-center justify-center gap-2 bg-primary/10 px-3 py-1.5 rounded-lg">
             <img 
               src="/logo website.png" 
@@ -146,11 +145,6 @@ const Auth = () => {
             <span className="text-2xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
               AICA.WEB.ID
             </span>
-=======
-          <div className="flex items-center justify-center gap-2">
-            <Scale className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-primary">AICA</span>
->>>>>>> Incoming (Background Agent changes)
           </div>
           <div>
             <CardTitle className="text-2xl">
