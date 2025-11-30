@@ -363,6 +363,48 @@ export type Database = {
         }
         Relationships: []
       }
+      temp_files: {
+        Row: {
+          created_at: string
+          download_count: number
+          expires_at: string
+          file_name: string
+          file_size: number
+          file_url: string
+          id: string
+          max_downloads: number
+          share_code: string
+          uploaded_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          created_at?: string
+          download_count?: number
+          expires_at?: string
+          file_name: string
+          file_size: number
+          file_url: string
+          id?: string
+          max_downloads?: number
+          share_code: string
+          uploaded_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          created_at?: string
+          download_count?: number
+          expires_at?: string
+          file_name?: string
+          file_size?: number
+          file_url?: string
+          id?: string
+          max_downloads?: number
+          share_code?: string
+          uploaded_at?: string
+          uploaded_by?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -389,6 +431,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_share_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
