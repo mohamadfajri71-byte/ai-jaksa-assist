@@ -42,6 +42,15 @@ export function AppSidebar({ isAdmin }: AppSidebarProps) {
   const collapsed = state === "collapsed";
   const [bidangOpen, setBidangOpen] = useState(false);
 
+  // Debug: Log menu items
+  useEffect(() => {
+    console.log("=== AppSidebar Debug ===");
+    console.log("Menu items count:", menuItems.length);
+    console.log("Menu items:", menuItems.map(item => item.title));
+    console.log("Reminder Absen in menu:", menuItems.some(item => item.title === "Reminder Absen"));
+    console.log("Temp Cloud in menu:", menuItems.some(item => item.title === "Temp Cloud"));
+  }, []);
+
   const isActive = (path: string) => location.pathname === path;
   
   const bidangSubmenu = [
