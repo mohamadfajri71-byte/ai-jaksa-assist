@@ -1,4 +1,4 @@
-import { Search, MessageSquare, FileText, BookOpen, Shield, User, Bell, FolderTree, ChevronRight } from "lucide-react";
+import { Search, MessageSquare, FileText, BookOpen, Shield, User, Bell, FolderTree, ChevronRight, Cloud } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -24,6 +24,7 @@ const menuItems = [
   { title: "Asisten Draf", url: "/dashboard/draft", icon: FileText },
   { title: "Database", url: "/dashboard/knowledge", icon: BookOpen },
   { title: "Reminder Absen", url: "/dashboard/reminder", icon: Bell },
+  { title: "Temp Cloud", url: "/dashboard/temp-cloud", icon: Cloud },
 ];
 
 const settingsItems = [
