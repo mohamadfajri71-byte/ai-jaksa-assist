@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Routes, Route, Navigate } from "react-router-dom";
+import { useNavigate, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
@@ -22,16 +22,21 @@ import TempCloud from "@/components/dashboard/TempCloud";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [dashboardPopupOpen, setDashboardPopupOpen] = useState(false);
   
-  // Debug: Log current location
+  // Debug: Log current location and routes
   useEffect(() => {
-    console.log("Dashboard mounted, current path:", window.location.pathname);
-  }, []);
+    console.log("=== Dashboard Debug ===");
+    console.log("Window pathname:", window.location.pathname);
+    console.log("React Router location:", location.pathname);
+    console.log("Is reminder route:", location.pathname.includes("reminder"));
+    console.log("Is temp-cloud route:", location.pathname.includes("temp-cloud"));
+  }, [location]);
 
   useEffect(() => {
     const checkAuth = async () => {
