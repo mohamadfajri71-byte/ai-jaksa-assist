@@ -3,7 +3,7 @@ import { useNavigate, Routes, Route, Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { LogOut, Shield, Menu } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -152,6 +152,10 @@ const Dashboard = () => {
 
       <Dialog open={dashboardPopupOpen} onOpenChange={setDashboardPopupOpen}>
         <DialogContent className="max-w-3xl border-0 bg-transparent p-0 shadow-none">
+          <DialogTitle className="sr-only">Dashboard Highlights</DialogTitle>
+          <DialogDescription className="sr-only">
+            Informasi tentang fitur-fitur dashboard AICA
+          </DialogDescription>
           <div className="relative overflow-hidden rounded-3xl shadow-2xl">
             <img
               src="/dashboard popup.png"
